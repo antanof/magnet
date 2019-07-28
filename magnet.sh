@@ -6,14 +6,19 @@ limit="50"
 search () {
 	echo "search ID with title"
 	ID=`curl -s --request GET "https://$fqdn/api/v2/list_movies.json?limit=$limit" | jq '.data.movies[] | select(.title | test("'$1'"))' | grep -oP '(?<="id": )[^,]*'`
-	echo "> $ID"
+	if [ $? == 0 ] ; then
+	  echo "> $ID"
+	else
+		echo "> not matching"
+		exit 0
+	fi
 }
 
 magnet () {
 	echo "hash recovery"
 	TORRENT_HASH=`curl -s --request GET https://$fqdn/api/v2/movie_details.json?movie_id=$1 | jq '.data[]' | jq '.torrents[] | select(.quality | test("1080p"))' | grep -oP '(?<="hash": ")[^"]*'`
 	echo "> $TORRENT_HASH"
-	echo "exact titre recovery"
+	echo "exact title recovery"
 	TITLE=`curl -s --request GET https://$fqdn/api/v2/movie_details.json?movie_id=$1 | jq '.data[]' | grep -oP '(?<="title": ")[^"]*'`
 	echo "> $TITLE"
 	echo "url recovery"
