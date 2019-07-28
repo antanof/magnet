@@ -2,10 +2,10 @@
 
 fqdn="yts.lt"
 encoded="1080p"
-
+limit="50"
 search () {
 	echo "search ID with title"
-	ID=`curl -s --request GET "https://$fqdn/api/v2/list_movies.json?limit=50" | jq '.data.movies[] | select(.title | test("'$1'"))' | grep -oP '(?<="id": )[^,]*'`
+	ID=`curl -s --request GET "https://$fqdn/api/v2/list_movies.json?$limit=50" | jq '.data.movies[] | select(.title | test("'$1'"))' | grep -oP '(?<="id": )[^,]*'`
 	echo "> $ID"
 }
 
